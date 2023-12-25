@@ -9,5 +9,5 @@ cd extensions/
 for i in "${!ext_array[@]}"
 do
     echo "Installing extension with the git url of ${ext_array[$i]}"
-    git clone ${ext_array[$i]}
+    git clone --depth 1 ${ext_array[$i]}
 done
