@@ -1,13 +1,17 @@
 FROM mediawiki:stable-fpm-alpine
 
-# Install nginx
+# Install packages
 RUN apk update && \
     apk add nginx bash && \
     chown -Rf www-data:www-data /var/lib/nginx
 COPY config/nginx/* /etc/nginx/
 
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY config/composer/* /var/www/html
+
 # Install extra extensions
-COPY ./extension-installer.sh /tmp/extension-installer.sh
+COPY ./config/extension-installer.sh /tmp/extension-installer.sh
 RUN chmod +x /tmp/extension-installer.sh && \
     /bin/bash /tmp/extension-installer.sh && \
     rm /tmp/extension-installer.sh
