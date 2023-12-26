@@ -4,7 +4,7 @@ cd $dir # Make sure we are set in the correct wd
 
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
-    ["https://github.com/edwardspec/mediawiki-aws-s3"]="REL1_34"
+    ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/TemplateStyles"]="REL1_41"
 )
@@ -18,7 +18,7 @@ for repo in "${!repos[@]}"; do
     git clone --depth 1 --single-branch --branch $branch $repo
 done
 
-# Run composer
+# Update/Install extension dependencies
 cd $dir
-echo "Running composer"
-composer update
+echo "Running composer update in $dir"
+composer update --no-dev --ignore-platform-reqs
