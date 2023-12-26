@@ -7,8 +7,8 @@ RUN apk update && \
 COPY config/nginx/* /etc/nginx/
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY config/composer/* /var/www/html
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install extra extensions
 COPY ./config/extension-installer.sh /tmp/extension-installer.sh
