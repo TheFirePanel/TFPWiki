@@ -6,6 +6,8 @@ cd $dir # Make sure we are set in the correct wd
 declare -A repos=(
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
+    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/PluggableAuth"]="REL1_41"
+    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/SimpleSAMLphp"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/TemplateStyles"]="REL1_41"
 )
 
