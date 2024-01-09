@@ -5,9 +5,12 @@ RUN apk update && \
     apk add nginx \
     bash \
     lua5.1-dev \
+    supervisor \
     && \
     chown -Rf www-data:www-data /var/lib/nginx
+
 COPY config/nginx/* /etc/nginx/
+COPY config/supervisor /etc/supervisor/
 
 # Install extra php extensions
 RUN apk add --no-cache --virtual .build-deps \
@@ -25,14 +28,13 @@ RUN apk add --no-cache --virtual .build-deps \
 COPY config/composer/* /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Install extra extensions
-COPY ./config/extension-installer.sh /tmp/extension-installer.sh
-RUN chmod +x /tmp/extension-installer.sh && \
-    /bin/bash /tmp/extension-installer.sh && \
-    rm /tmp/extension-installer.sh
+# Install scripts and run extension installer
+COPY ./config/scripts/ /scripts/
+RUN chmod -R +x /scripts/; \
+    /bin/bash /scripts/extension-installer.sh && \
+    rm /scripts/extension-installer.sh
 
 # Copy public files to root
 COPY ./config/public/* /var/www/html
 
-CMD php-fpm -D && \
-    nginx -g "daemon off;"
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
