@@ -1,4 +1,10 @@
 <?php
+## Site Name
+$wgSitename = getenv('MW_SITENAME');
+$wgMetaNamespace = preg_replace('/\s+/', '_', $wgSitename); # Replaces sitename spaces with underscores
+
+## The protocol and server name to use in fully-qualified URLs
+$wgServer = getenv('MW_SERVER');
 
 ## Secret key
 $wgSecretKey = getenv('MW_SECRET');
@@ -18,7 +24,3 @@ $wgUsePathInfo = true;
 
 # Job runner disable
 $wgJobRunRate = 0;
-
-## Permission Config
-# Interwiki
-$wgGroupPermissions['sysop']['interwiki'] = true;
