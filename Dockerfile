@@ -4,6 +4,7 @@ FROM mediawiki:stable-fpm-alpine
 RUN apk update && \
     apk add nginx \
     bash \
+    curl \
     lua5.1-dev \
     supervisor \
     && \
@@ -37,4 +38,4 @@ RUN chmod -R +x /scripts/; \
 # Copy public files to root
 COPY ./config/public/* /var/www/html
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/scripts/entrypoint.sh"]
