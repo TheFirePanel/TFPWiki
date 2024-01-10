@@ -1,6 +1,6 @@
 #!/bin/bash
-dir="/var/www/html"
-cd $dir # Make sure we are set in the correct wd
+DIR="/var/www/html"
+cd $DIR # Make sure we are set in the correct wd
 
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
@@ -12,7 +12,7 @@ declare -A repos=(
 )
 
 # Go into extensions directory
-cd $dir/extensions/
+cd $DIR/extensions/
 for repo in "${!repos[@]}"; do
     branch=${repos[$repo]}
     
@@ -21,6 +21,6 @@ for repo in "${!repos[@]}"; do
 done
 
 # Update/Install extension dependencies
-cd $dir
-echo "Running composer update in $dir"
+cd $DIR
+echo "Running composer update in $DIR"
 composer update --no-dev --ignore-platform-reqs
