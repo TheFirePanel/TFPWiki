@@ -1,0 +1,260 @@
+<?php
+# Require CommonSettings
+require_once("CommonSettings.php");
+
+# Database
+define('SSO_DB_TABLE', 'sso_login');
+# URLs
+define('SSO_URL_LOGGED', 'https://'.$_SERVER['HTTP_HOST']);
+define('SSO_URL_SCRIPT', 'https://'.$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME']);
+define('SSO_URL_DISCOURSE', getenv('DISCOURSE_URL'));
+# Secrets
+define('SSO_SECRET', getenv('DISCOURSE_SECRET')); # Discourse secret
+define('SSO_LOCAL_SECRET', $wgSecretKey); # Sign cookies
+# Timeouts
+define('SSO_TIMEOUT', 60);
+define('SSO_EXPIRE', 2592000);
+# Cookies
+define('SSO_COOKIE', '__discourse_sso');
+define('SSO_COOKIE_DOMAIN', $_SERVER['HTTP_HOST']);
+define('SSO_COOKIE_SECURE', true);
+define('SSO_COOKIE_HTTPONLY', true);
+
+// We'll only redirect to Discourse if script executed directly
+if(basename(__FILE__) === basename($_SERVER['SCRIPT_NAME']))
+{
+	$DISCOURSE_SSO = new DiscourseSSOClient(true);
+	$status = $DISCOURSE_SSO->getAuthentication();
+	if(false !== $status && true == $status['logged'])
+	{
+        if(isset($_GET['logout']))
+            {
+                $hashedNonce = hash('sha512', $status["nonce"]);
+
+                if($hashedNonce === $_GET['logout'])
+                {
+                    $DISCOURSE_SSO->logoutUser($status["nonce"]);
+                }
+                else
+                {
+                    die("invalid logout request");
+                }
+            }
+        else
+            {
+                header('Location: /');
+            }
+
+	}
+	else if(empty($_GET) || !isset($_GET['sso']) || !isset($_GET['sig']))
+	{
+		$DISCOURSE_SSO->authenticate();
+	}
+	else
+	{
+		$DISCOURSE_SSO->verify($_GET['sso'], $_GET['sig']);
+	}
+}
+
+class DiscourseSSOClient
+{
+	private $mysqli;
+	private $sqlStructure = 'CREATE TABLE IF NOT EXISTS `%s` (
+		`id` int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+		`nonce` text NOT NULL,
+		`logged` Tinyint(1) NOT NULL,
+		`name` text,
+		`username` text,
+		`email` text,
+		`admin` Tinyint(1) NOT NULL,
+		`moderator` Tinyint(1) NOT NULL,
+		`expire` int(11) NOT NULL
+	)';
+
+	public function __construct($createTableIfNotExist = false)
+	{
+		global $wgDBserver, $wgDBuser, $wgDBpassword, $wgDBname;
+
+		$this->mysqli = new mysqli($wgDBserver, $wgDBuser, $wgDBpassword, $wgDBname);
+		if(mysqli_connect_errno())
+		{
+			exit('Discourse SSO: could not connect to MySQL database!');
+		}
+		if($createTableIfNotExist)
+			$this->createTableIfNotExist();
+		if(rand(0, 10) === 50)
+			$this->removeExpiredNonces();
+	}
+
+	public function getAuthentication()
+	{
+		if(empty($_COOKIE) || !isset($_COOKIE[SSO_COOKIE]))
+			return false;
+
+		$cookie_nonce = explode(',', $_COOKIE[SSO_COOKIE], 2);
+		if($cookie_nonce[1] !== $this->signCookie($cookie_nonce[0]))
+			return false;
+
+		$status = $this->getStatus($this->clear($cookie_nonce[0]));
+		if(false === $status)
+			return false;
+
+		return $status;
+	}
+
+	public function authenticate()
+	{
+		$nonce = hash('sha512', mt_rand().time());
+		$nonceExpire = time() + SSO_TIMEOUT;
+		$this->addNonce($nonce, $nonceExpire);
+		$this->setCookie($nonce, $nonceExpire);
+		$payload = base64_encode(http_build_query(array(
+			'nonce' => $nonce,
+			'return_sso_url' => SSO_URL_SCRIPT
+		)));
+		$request = array(
+			'sso' => $payload,
+			'sig' => hash_hmac('sha256', $payload, SSO_SECRET)
+		);
+		$url = $this->getUrl($request);
+		header('Location: '.$url);
+		echo '<a href='.$url.'>Sign in with Discourse</a><pre>';
+	}
+
+	public function verify($sso, $signature)
+	{
+		$sso = urldecode($sso);
+		if(hash_hmac('sha256', $sso, SSO_SECRET) !== $signature)
+		{
+			header('HTTP/1.1 404 Not Found');
+			exit();
+		}
+
+		$query = array();
+		parse_str(base64_decode($sso), $query);
+		$query['nonce'] = $this->clear($query['nonce']);
+
+		if(false === $this->getStatus($query['nonce'])){
+			header('HTTP/1.1 404 Not Found');
+			exit();
+		}
+
+		$loginExpire = time() + SSO_EXPIRE;
+		$this->loginUser($query, $loginExpire);
+		$this->setCookie($query['nonce'], $loginExpire);
+		header('Access-Control-Allow-Origin: *');
+		header('Location: '.SSO_URL_LOGGED);
+	}
+	
+    public function logoutUser($nonce)
+    {
+            $this->removeNonce($nonce);
+            $this->unSetCookie();
+            header('Location: ' . SSO_URL_LOGGED);
+    }
+
+	public function removeNonce($nonce)
+	{
+		$nonce = $this->mysqli->escape_string($nonce);
+		$this->mysqli->query('DELETE FROM '.SSO_DB_TABLE.' WHERE nonce = "'.$nonce.'"');
+	}
+
+	private function removeExpiredNonces()
+	{
+		$this->mysqli->query('DELETE FROM '.SSO_DB_TABLE.' WHERE expire < UNIX_TIMESTAMP()');
+	}
+
+	private function addNonce($nonce, $expire)
+	{
+		$nonce = $this->mysqli->escape_string($nonce);
+		$this->mysqli->query("INSERT INTO ".SSO_DB_TABLE." (`id`, `nonce`, `logged`, `expire`,`admin`,`moderator`) VALUES (NULL, '$nonce', '0', '".$expire."',0,0);");
+	}
+
+	private function getStatus($nonce)
+	{
+		$return = array(
+			'nonce' => $nonce,
+			'logged' => false,
+			'data' => array(
+				'name' => '',
+				'username' => '',
+				'email' => '',
+				'admin'	=> false,
+				'moderator'	=> false
+			)
+		);
+		$nonce = $this->mysqli->escape_string($nonce);
+		if($result = $this->mysqli->query("SELECT * FROM ".SSO_DB_TABLE." WHERE `nonce`='$nonce' AND `expire` > UNIX_TIMESTAMP()"))
+		{
+			if($result->num_rows === 1)
+			{
+				$row = $result->fetch_assoc();
+				$return['logged'] = intval($row['logged']) == 1;
+				$return['data']['name'] = $row['name'];
+				$return['data']['username'] = $row['username'];
+				$return['data']['email'] = $row['email'];
+				$return['data']['admin'] = intval($row['admin']) == 1;
+				$return['data']['moderator'] = intval($row['admin']) == 1;
+			}
+			return $return;
+		}
+		return false;
+	}
+
+	private function loginUser($data, $expire)
+	{
+		$isAdmin = $data['admin'] === 'true' ? '1' : '0';
+		$isModerator = $data['moderator'] === 'true' ? '1' : '0';
+		$this->mysqli->query("UPDATE `".SSO_DB_TABLE."`
+			SET
+				`logged` = 1,
+				`expire` = ".$expire.",
+				`name` = '".$this->mysqli->escape_string($data['name'])."',
+				`username` = '".$this->mysqli->escape_string($data['username'])."',
+				`email` = '".$this->mysqli->escape_string($data['email'])."',
+				`admin` = '".$isAdmin."',
+				`moderator` = '".$isModerator."'
+			WHERE `nonce` = '".$this->mysqli->escape_string($data['nonce'])."'");
+	}
+
+	private function setCookie($value, $expire)
+	{
+		setcookie(SSO_COOKIE, $value.','.$this->signCookie($value), $expire, "/", SSO_COOKIE_DOMAIN, SSO_COOKIE_SECURE, SSO_COOKIE_HTTPONLY);
+	}
+	
+	private function unSetCookie()
+	{
+		setcookie(SSO_COOKIE, '', time() - 3600, "/", SSO_COOKIE_DOMAIN, SSO_COOKIE_SECURE, SSO_COOKIE_HTTPONLY);
+	}
+
+	private function getUrl($request)
+	{
+		return SSO_URL_DISCOURSE.'/session/sso_provider?'.http_build_query($request);
+	}
+
+	private function signCookie($string)
+	{
+		return hash_hmac('sha256', $string, SSO_LOCAL_SECRET);
+	}
+
+	private function clear($string)
+	{
+		return preg_replace('[^A-Za-z0-9_]', '', trim($string));
+	}
+
+	private function createTableIfNotExist()
+	{
+		if($result = $this->mysqli->query(sprintf("SHOW TABLES LIKE '%s'", SSO_DB_TABLE)))
+		{
+			if($result->num_rows != 1)
+			{
+				$this->mysqli->query(sprintf($this->sqlStructure, SSO_DB_TABLE));
+			}
+		}
+	}
+
+	public function dropTable()
+	{
+		$this->mysqli->query("DROP TABLE IF EXISTS ".SSO_DB_TABLE);
+	}
+}
