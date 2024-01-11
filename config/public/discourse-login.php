@@ -146,12 +146,12 @@ class DiscourseSSOClient
 		header('Location: '.SSO_URL_LOGGED);
 	}
 	
-    public function logoutUser($nonce)
-    {
-            $this->removeNonce($nonce);
-            $this->unSetCookie();
-            header('Location: ' . SSO_URL_LOGGED);
-    }
+    	public function logoutUser($nonce)
+    	{
+		$this->removeNonce($nonce);
+		$this->unSetCookie();
+		header('Location: ' . SSO_URL_LOGGED);
+   	}
 
 	public function removeNonce($nonce)
 	{
