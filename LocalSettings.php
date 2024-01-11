@@ -159,3 +159,44 @@ wfLoadExtension( 'TemplateStyles' );
 ## Permission Config
 # Interwiki
 $wgGroupPermissions['sysop']['interwiki'] = true;
+
+## Discourse
+$wgGroupPermissions['*']['createaccount'] = false;
+$wgGroupPermissions['*']['autocreateaccount'] = true;
+
+# Start modifictions for discourse authentication
+require_once( "$IP/discourse-login.php" );
+$DISCOURSE_SSO = new DiscourseSSOClient();
+$SSO_STATUS = $DISCOURSE_SSO->getAuthentication();
+if(is_array($SSO_STATUS) && $SSO_STATUS['logged'] === true && !empty($SSO_STATUS['data']['username']))
+{
+	$wgAuthRemoteuserUserName = $SSO_STATUS['data']['username'];
+	$wgAuthRemoteuserUserPrefs = [
+		'email' => $SSO_STATUS['data']['email']
+	];
+
+	if(!empty($SSO_STATUS['data']['name']))
+	{
+		$wgAuthRemoteuserUserPrefs['realname'] = $SSO_STATUS['data']['name'];
+	}
+
+	# Allow logout url
+	define('SSO_LOGOUT_TOKEN', hash('sha512', $SSO_STATUS["nonce"]));
+	$wgAuthRemoteuserUserUrls = [
+		'logout' => function( $metadata ) {
+			return '/discourse-login.php?logout=' . SSO_LOGOUT_TOKEN;
+		}
+	];
+
+	# Load our extension
+	wfLoadExtension( 'Auth_remoteuser' );
+} else {
+	## Override Login
+	$wgSpecialPages['UserLogin'] = 'redirectLogin';
+	$wgSpecialPages['Login'] = 'redirectLogin';
+
+	function redirectLogin() {
+		header("Location: /discourse-login.php");
+		exit;
+	};
+}
