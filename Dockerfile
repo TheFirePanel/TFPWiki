@@ -1,8 +1,10 @@
-FROM mediawiki:stable-fpm-alpine
+# Use php-fpm image
+FROM mediawiki:stable-fpm
 
 # Install packages
-RUN apk update && \
-    apk add nginx \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nginx \
     bash \
     curl \
     lua5.1-dev \
@@ -14,16 +16,11 @@ COPY config/nginx/* /etc/nginx/
 COPY config/supervisor /etc/supervisor/
 
 # Install extra php extensions
-RUN apk add --no-cache --virtual .build-deps \
-		$PHPIZE_DEPS \
-	; \
-	\
-    pecl install luasandbox; \
+RUN pecl install luasandbox; \
 	docker-php-ext-enable \
 		luasandbox \
 	; \
-    rm -r /tmp/pear; \
-    apk del --no-network .build-deps
+    rm -r /tmp/pear
 
 # Install composer
 COPY config/composer/* /var/www/html
