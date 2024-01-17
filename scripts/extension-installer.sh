@@ -4,7 +4,6 @@ cd $DIR # Make sure we are set in the correct wd
 
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
-    #["https://gerrit.wikimedia.org/r/mediawiki/extensions/Auth_remoteuser"]="REL1_41"
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect"]="REL1_41"
