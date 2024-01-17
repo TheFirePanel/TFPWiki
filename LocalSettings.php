@@ -21,16 +21,6 @@ require_once("$IP/CommonSettings.php");
 ## Uncomment this to disable output compression
 # $wgDisableOutputCompression = true;
 
-## The URL base path to the directory containing the wiki;
-## defaults for all runtime URL paths are based off of this.
-## For more information on customizing the URLs
-## (like /w/index.php/Page_title to /wiki/Page_title) please see:
-## https://www.mediawiki.org/wiki/Manual:Short_URL
-$wgScriptPath = "";
-
-## The URL path to static resources (images, scripts, etc.)
-$wgResourceBasePath = $wgScriptPath;
-
 ## The URL paths to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
 $wgLogos = [
@@ -63,7 +53,7 @@ $wgMemCachedServers = [];
 
 ## To enable image uploads, make sure the 'images' directory
 ## is writable, then set this to true:
-$wgEnableUploads = false;
+$wgEnableUploads = true;
 $wgUseImageMagick = true;
 $wgImageMagickConvertCommand = "/usr/bin/convert";
 
@@ -152,51 +142,36 @@ wfLoadExtension( 'WikiEditor' );
 # Add more configuration options below.
 
 ## Extra Extensions
-wfLoadExtension( 'mediawiki-aws-s3' );
 wfLoadExtension( 'MobileFrontend' ); $wgMFDefaultSkinClass = 'MinervaNeue';
 wfLoadExtension( 'TemplateStyles' );
+
+## S3
+wfLoadExtension( 'mediawiki-aws-s3' );
+$wgAWSCredentials = [
+	'key' => getenv('S3_KEY'),
+	'secret' => getenv('S3_SECRET'),
+	'token' => false
+];
+$wgAWSBucketName = getenv('S3_NAME');
+$wgAWSRegion = getenv('S3_REGION');
 
 ## Permission Config
 # Interwiki
 $wgGroupPermissions['sysop']['interwiki'] = true;
 
-## Discourse
+## Pluggable Auth
+wfLoadExtension( 'PluggableAuth' );
+wfLoadExtension( 'OpenIDConnect' );
+
 $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['autocreateaccount'] = true;
 
-# Start modifictions for discourse authentication
-require_once( "$IP/discourse-login.php" );
-$DISCOURSE_SSO = new DiscourseSSOClient();
-$SSO_STATUS = $DISCOURSE_SSO->getAuthentication();
-if(is_array($SSO_STATUS) && $SSO_STATUS['logged'] === true && !empty($SSO_STATUS['data']['username']))
-{
-	$wgAuthRemoteuserUserName = $SSO_STATUS['data']['username'];
-	$wgAuthRemoteuserUserPrefs = [
-		'email' => $SSO_STATUS['data']['email']
-	];
-
-	if(!empty($SSO_STATUS['data']['name']))
-	{
-		$wgAuthRemoteuserUserPrefs['realname'] = $SSO_STATUS['data']['name'];
-	}
-
-	# Allow logout url
-	define('SSO_LOGOUT_TOKEN', hash('sha512', $SSO_STATUS["nonce"]));
-	$wgAuthRemoteuserUserUrls = [
-		'logout' => function( $metadata ) {
-			return '/discourse-login.php?logout=' . SSO_LOGOUT_TOKEN;
-		}
-	];
-
-	# Load our extension
-	wfLoadExtension( 'Auth_remoteuser' );
-} else {
-	## Override Login
-	$wgSpecialPages['UserLogin'] = 'redirectLogin';
-	$wgSpecialPages['Login'] = 'redirectLogin';
-
-	function redirectLogin() {
-		header("Location: /discourse-login.php");
-		exit;
-	};
-}
+$wgPluggableAuth_Config[] = [
+    'plugin' => 'OpenIDConnect',
+    'data' => [
+        'providerURL' => getenv('ID_PROVIDER'),
+        'clientID' => getenv('ID_CLIENT'),
+        'clientsecret' => getenv('ID_SECRET'),
+		'preferred_username' => 'sub'
+    ]
+];
