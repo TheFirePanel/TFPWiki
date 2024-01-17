@@ -19,8 +19,10 @@ $wgDBprefix = "";
 
 ## Webserver changes
 # Path settings
-$wgArticlePath = '/wiki/$1';
-$wgUsePathInfo = true;
-
+$wgArticlePath = '/wiki/$1'; $wgUsePathInfo = true;
+## The URL base path to the directory containing the wiki;
+$wgScriptPath = "";
+## The URL path to static resources (images, scripts, etc.)
+$wgResourceBasePath = $wgScriptPath;
 # Job runner disable
 $wgJobRunRate = 0;

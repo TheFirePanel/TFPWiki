@@ -21,6 +21,7 @@ RUN pecl install luasandbox; \
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY config/var/www/html/composer.local.json /var/www/html
 
 # Run extension installer
 COPY scripts /scripts
