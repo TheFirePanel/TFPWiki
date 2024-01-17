@@ -26,3 +26,8 @@ $wgScriptPath = "";
 $wgResourceBasePath = $wgScriptPath;
 # Job runner disable
 $wgJobRunRate = 0;
+# Get the correct IP from X-Forwarded-For
+$wgUsePrivateIPs = true;
+$wgCdnServersNoPurge[] = "192.168.0.0/16";
+$wgCdnServersNoPurge[] = "10.0.0.0/8";
+$wgCdnServersNoPurge[] = "172.16.0.0/12";
