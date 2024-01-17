@@ -24,9 +24,15 @@ require_once("$IP/CommonSettings.php");
 ## The URL paths to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
 $wgLogos = [
-	'1x' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
-	'icon' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
+	'1x' => 'https://cdn.thefirepanel.com/original/2X/f/f13b84d22c745f168dbb20b53f704faf1bcce17c.png',
+	'icon' => 'https://cdn.thefirepanel.com/wiki/logos/logo_mark.png',
+	'wordmark' => [
+		'width' => '124',
+		'height' => '50',
+		'src' => 'https://cdn.thefirepanel.com/wiki/logos/word_mark.png'
+	]
 ];
+$wgFavicon = "https://cdn.thefirepanel.com/wiki/logos/logo_mark.png";
 
 ## UPO means: this is also a user preference option
 
@@ -156,6 +162,9 @@ $wgAWSBucketTopSubdirectory = getenv('S3_PREFIX');
 $wgAWSBucketDomain = getenv('S3_DOMAIN');
 
 ## Permission Config
+# Default settings
+$wgGroupPermissions['*']['edit'] = false;
+
 # Interwiki
 $wgGroupPermissions['sysop']['interwiki'] = true;
 
