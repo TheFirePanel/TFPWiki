@@ -152,6 +152,8 @@ $wgAWSCredentials = [
 ];
 $wgAWSBucketName = getenv('S3_NAME');
 $wgAWSRegion = getenv('S3_REGION');
+$wgAWSBucketTopSubdirectory = getenv('S3_PREFIX');
+$wgAWSBucketDomain = getenv('S3_DOMAIN');
 
 ## Permission Config
 # Interwiki
@@ -171,5 +173,5 @@ $wgPluggableAuth_Config[] = [
         'clientID' => getenv('ID_CLIENT'),
         'clientsecret' => getenv('ID_SECRET'),
 		'preferred_username' => 'sub'
-    ]
+	]
 ];

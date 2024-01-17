@@ -2,6 +2,9 @@ name: Build Docker
 on:
   pull_request:
   push:
+permissions:
+  contents: read
+  packages: write
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
