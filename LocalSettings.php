@@ -182,8 +182,9 @@ wfLoadExtension( 'OpenIDConnect' );
 $wgGroupPermissions['*']['createaccount'] = false;
 $wgGroupPermissions['*']['autocreateaccount'] = true;
 
-# 1 week session storage, we do not provide a keep me signed in button
-$wgObjectCacheSessionExpiry = 604800;
+# 1 day session expire, unless user has refresh token
+$wgObjectCacheSessionExpiry = 86400;
+$wgRememberMe = 'always';
 
 $wgPluggableAuth_Config[] = [
     'plugin' => 'OpenIDConnect',

@@ -4,10 +4,10 @@ FROM mediawiki:stable-fpm
 # Install packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    nginx \
     bash \
     curl \
     lua5.1-dev \
+    nginx \
     supervisor \
     && \
     chown -Rf www-data:www-data /var/lib/nginx
