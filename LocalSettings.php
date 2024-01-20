@@ -134,6 +134,7 @@ wfLoadExtension( 'OATHAuth' );
 wfLoadExtension( 'ParserFunctions' );
 wfLoadExtension( 'PdfHandler' );
 wfLoadExtension( 'Scribunto' ); $wgScribuntoDefaultEngine = 'luasandbox';
+wfLoadExtension( 'SyntaxHighlight_GeSHi' );
 wfLoadExtension( 'SecureLinkFixer' );
 wfLoadExtension( 'SpamBlacklist' );
 wfLoadExtension( 'TemplateData' );
