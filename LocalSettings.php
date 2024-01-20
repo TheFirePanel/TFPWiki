@@ -150,6 +150,11 @@ wfLoadExtension( 'WikiEditor' );
 wfLoadExtension( 'MobileFrontend' ); $wgMFDefaultSkinClass = 'MinervaNeue';
 wfLoadExtension( 'TemplateStyles' );
 
+## Image uploads
+$wgFileExtensions = array_merge( $wgFileExtensions, [
+	'pdf', 'svg', 'mp3', 'ogg', 'wav'
+] );
+
 ## S3
 wfLoadExtension( 'mediawiki-aws-s3' );
 $wgAWSCredentials = [
