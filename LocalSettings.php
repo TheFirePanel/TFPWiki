@@ -93,9 +93,9 @@ $wgAuthenticationTokenVersion = "1";
 ## appropriate copyright notice / icon. GNU Free Documentation
 ## License and Creative Commons licenses are supported so far.
 $wgRightsPage = ""; # Set to the title of a wiki page that describes your license/copyright
-$wgRightsUrl = "https://creativecommons.org/licenses/by-sa/4.0/";
+$wgRightsUrl = "https://creativecommons.org/licenses/by-nc-sa/4.0/";
 $wgRightsText = "Creative Commons Attribution-ShareAlike License";
-$wgRightsIcon = "";
+$wgRightsIcon = "https://cdn.thefirepanel.com/wiki/Creative_commons.png";
 
 # Path to the GNU diff3 utility. Used for conflict resolution.
 $wgDiff3 = "/usr/bin/diff3";
