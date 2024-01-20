@@ -154,6 +154,7 @@ wfLoadExtension( 'TemplateStyles' );
 $wgFileExtensions = array_merge( $wgFileExtensions, [
 	'pdf', 'svg', 'mp3', 'ogg', 'wav'
 ] );
+$wgSVGNativeRendering = true;
 
 ## S3
 wfLoadExtension( 'mediawiki-aws-s3' );
