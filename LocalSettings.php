@@ -34,8 +34,6 @@ $wgLogos = [
 ];
 $wgFavicon = "https://cdn.thefirepanel.com/wiki/logos/logo_mark.png";
 
-## UPO means: this is also a user preference option
-
 # MySQL table options to use during installation or update
 $wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
 
@@ -151,18 +149,16 @@ if (getenv('SMTP_HOST')) {
 	$wgSMTP = [
 		'host' => getenv('SMTP_HOST'),
 		'port' => getenv('SMTP_PORT'),
-		'auth' => true,
-		'username' => getenv('SMTP_USER'),
-		'password' => getenv('SMTP_PASS')
+		'auth' => false
 	];
 	$wgEmergencyContact = getenv('SMTP_SENDER');
 	$wgPasswordSender = getenv('SMTP_SENDER');
 
 	$wgEnableEmail = true;
-	$wgEnableUserEmail = true; # UPO
+	$wgEnableUserEmail = true;
 
-	$wgEnotifUserTalk = false; # UPO
-	$wgEnotifWatchlist = false; # UPO
+	$wgEnotifUserTalk = false;
+	$wgEnotifWatchlist = false;
 	$wgEmailAuthentication = false; # Discourse sends verfied emails already
 }
 
