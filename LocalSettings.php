@@ -36,16 +36,6 @@ $wgFavicon = "https://cdn.thefirepanel.com/wiki/logos/logo_mark.png";
 
 ## UPO means: this is also a user preference option
 
-$wgEnableEmail = false;
-$wgEnableUserEmail = true; # UPO
-
-$wgEmergencyContact = "";
-$wgPasswordSender = "";
-
-$wgEnotifUserTalk = false; # UPO
-$wgEnotifWatchlist = false; # UPO
-$wgEmailAuthentication = true;
-
 # MySQL table options to use during installation or update
 $wgDBTableOptions = "ENGINE=InnoDB, DEFAULT CHARSET=binary";
 
@@ -155,6 +145,26 @@ $wgFileExtensions = array_merge( $wgFileExtensions, [
 	'pdf', 'svg', 'mp3', 'ogg', 'wav'
 ] );
 $wgSVGNativeRendering = true;
+
+## SMTP
+if (getenv('SMTP_HOST')) {
+	$wgSMTP = [
+		'host' => getenv('SMTP_HOST'),
+		'port' => getenv('SMTP_PORT'),
+		'auth' => true,
+		'username' => getenv('SMTP_USER'),
+		'password' => getenv('SMTP_PASS')
+	];
+	$wgEmergencyContact = getenv('SMTP_SENDER');
+	$wgPasswordSender = getenv('SMTP_SENDER');
+
+	$wgEnableEmail = true;
+	$wgEnableUserEmail = true; # UPO
+
+	$wgEnotifUserTalk = false; # UPO
+	$wgEnotifWatchlist = false; # UPO
+	$wgEmailAuthentication = false; # Discourse sends verfied emails already
+}
 
 ## S3
 wfLoadExtension( 'mediawiki-aws-s3' );
