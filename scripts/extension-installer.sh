@@ -34,5 +34,5 @@ done
 # Run the actual composer command
 cd $DIR
 echo "Running composer update in $DIR"
-composer update --no-dev --ignore-platform-reqs
+COMPOSER_ALLOW_SUPERUSER=1 composer update --no-dev
 rm -rf /root/.composer # Remove composer cache
