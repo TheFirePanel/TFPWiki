@@ -5,6 +5,7 @@ cd $DIR # Make sure we are set in the correct wd
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
+    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/Disambiguator"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/PluggableAuth"]="REL1_41"
@@ -25,7 +26,7 @@ done
 
 ## Update/Install extension dependencies
 # Delete problem child composer files
-IGNORE_COMPOSER=("Auth_remoteuser")
+IGNORE_COMPOSER=()
 for ext in "${IGNORE_COMPOSER[@]}"; do
     rm $DIR/extensions/$ext/composer.json
 done

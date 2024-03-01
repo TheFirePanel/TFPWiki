@@ -135,6 +135,7 @@ wfLoadExtension( 'WikiEditor' );
 # Add more configuration options below.
 
 ## Extra Extensions
+wfLoadExtension( 'Disambiguator' );
 wfLoadExtension( 'MobileFrontend' ); $wgMFDefaultSkinClass = 'MinervaNeue';
 wfLoadExtension( 'TemplateStyles' );
 
