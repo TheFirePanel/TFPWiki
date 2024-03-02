@@ -202,3 +202,7 @@ $wgPluggableAuth_Config[] = [
 		'preferred_username' => 'sub'
 	]
 ];
+
+## Discord
+wfLoadExtension( 'mw-discord' );
+$wgDiscordWebhookURL = [ getenv('DISCORD_WEBHOOK') ];
