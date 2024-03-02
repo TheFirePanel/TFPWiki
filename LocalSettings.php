@@ -163,18 +163,6 @@ if (getenv('SMTP_HOST')) {
 	$wgEmailAuthentication = false; # Discourse sends verfied emails already
 }
 
-## S3
-wfLoadExtension( 'mediawiki-aws-s3' );
-$wgAWSCredentials = [
-	'key' => getenv('S3_KEY'),
-	'secret' => getenv('S3_SECRET'),
-	'token' => false
-];
-$wgAWSBucketName = getenv('S3_NAME');
-$wgAWSRegion = getenv('S3_REGION');
-$wgAWSBucketTopSubdirectory = getenv('S3_PREFIX');
-$wgAWSBucketDomain = getenv('S3_DOMAIN');
-
 ## Permission Config
 # Default settings
 $wgGroupPermissions['*']['edit'] = false;
@@ -182,27 +170,45 @@ $wgGroupPermissions['*']['edit'] = false;
 # Interwiki
 $wgGroupPermissions['sysop']['interwiki'] = true;
 
+## S3
+if (getenv('S3_KEY')) {
+	wfLoadExtension( 'mediawiki-aws-s3' );
+	$wgAWSCredentials = [
+		'key' => getenv('S3_KEY'),
+		'secret' => getenv('S3_SECRET'),
+		'token' => false
+	];
+	$wgAWSBucketName = getenv('S3_NAME');
+	$wgAWSRegion = getenv('S3_REGION');
+	$wgAWSBucketTopSubdirectory = getenv('S3_PREFIX');
+	$wgAWSBucketDomain = getenv('S3_DOMAIN');
+}
+
 ## Pluggable Auth
-wfLoadExtension( 'PluggableAuth' );
-wfLoadExtension( 'OpenIDConnect' );
+if (getenv('ID_SECRET')) {
+	wfLoadExtension( 'PluggableAuth' );
+	wfLoadExtension( 'OpenIDConnect' );
 
-$wgGroupPermissions['*']['createaccount'] = false;
-$wgGroupPermissions['*']['autocreateaccount'] = true;
+	$wgGroupPermissions['*']['createaccount'] = false;
+	$wgGroupPermissions['*']['autocreateaccount'] = true;
 
-# 1 day session expire, unless user has refresh token
-$wgObjectCacheSessionExpiry = 86400;
-$wgRememberMe = 'always';
+	# 1 day session expire, unless user has refresh token
+	$wgObjectCacheSessionExpiry = 86400;
+	$wgRememberMe = 'always';
 
-$wgPluggableAuth_Config[] = [
-    'plugin' => 'OpenIDConnect',
-    'data' => [
-        'providerURL' => getenv('ID_PROVIDER'),
-        'clientID' => getenv('ID_CLIENT'),
-        'clientsecret' => getenv('ID_SECRET'),
-		'preferred_username' => 'sub'
-	]
-];
+	$wgPluggableAuth_Config[] = [
+		'plugin' => 'OpenIDConnect',
+		'data' => [
+			'providerURL' => getenv('ID_PROVIDER'),
+			'clientID' => getenv('ID_CLIENT'),
+			'clientsecret' => getenv('ID_SECRET'),
+			'preferred_username' => 'sub'
+		]
+	];
+}
 
 ## Discord
-wfLoadExtension( 'mw-discord' );
-$wgDiscordWebhookURL = [ getenv('DISCORD_WEBHOOK') ];
+if (getenv('DISCORD_WEBHOOK')) {
+	wfLoadExtension( 'mw-discord' );
+	$wgDiscordWebhookURL = [ getenv('DISCORD_WEBHOOK') ];
+}
