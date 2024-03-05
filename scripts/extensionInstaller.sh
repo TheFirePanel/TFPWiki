@@ -5,7 +5,7 @@ cd $DIR # Make sure we are set in the correct wd
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
     ["https://github.com/jayktaylor/mw-discord"]="REL1_39"
-    ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
+    #["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/Disambiguator"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
     ["https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect"]="REL1_41"
@@ -35,5 +35,5 @@ done
 # Run the actual composer command
 cd $DIR
 echo "Running composer update in $DIR"
-COMPOSER_ALLOW_SUPERUSER=1 composer update --no-dev
+COMPOSER_ALLOW_SUPERUSER=1 composer update --prefer-dist --no-dev
 rm -rf /root/.composer # Remove composer cache

@@ -4,6 +4,7 @@ FROM mediawiki:stable-fpm
 # Install packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    cron \
     bash \
     curl \
     lua5.1-dev \
@@ -23,13 +24,17 @@ RUN pecl install luasandbox; \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 COPY config/var/www/html/composer.local.json /var/www/html
 
-# Run extension installer
+# Install scripts and run extension installer
 COPY scripts /scripts
 RUN chmod -R +x /scripts/; \
-    /bin/bash /scripts/extension-installer.sh && \
-    rm /scripts/extension-installer.sh
+    /bin/bash /scripts/extensionInstaller.sh && \
+    rm /scripts/extensionInstaller.sh && \
+    chown -Rf www-data:www-data /scripts
 
 # Copy all configuration values to their respective directories
 COPY config /
+
+# Set file permissions
+RUN chmod -R 644 /etc/cron.d
 
 CMD ["/scripts/entrypoint.sh"]
