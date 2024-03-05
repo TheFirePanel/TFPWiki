@@ -1,0 +1,53 @@
+version: '3'
+x-common:
+  database:
+    &db-environment
+    MYSQL_PASSWORD: &db-password "CHANGE"
+  mediawiki:
+    &mw-environment
+    MW_SITENAME: "The Fire Panel"
+    MW_SERVER: "https://wiki.thefirepanel.com"
+    MW_SECRET: "CHANGETO32CHARSTRING"
+services:
+  mediawiki:
+    image: thefirepanel/wiki:1.41
+    restart: always
+    container_name: mediawiki
+    ports:
+      - 8080:80
+    links:
+      - database
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      <<: *mw-environment
+      DEBUG: true
+      DB_HOST: database
+      DB_NAME: my_wiki
+      DB_USER: wikiuser
+      DB_PASS: *db-password
+    # Uncomment if using debug
+    #volumes:
+      # - ./LocalSettings.php:/var/www/html/LocalSettings.php
+  database:
+    image: mariadb
+    restart: always
+    environment:
+      <<: *db-environment
+      MYSQL_DATABASE: my_wiki
+      MYSQL_USER: wikiuser
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 10s
+      interval: 1m
+      timeout: 5s
+      retries: 3
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  images:
+  db:
