@@ -10,7 +10,7 @@ x-common:
     MW_SECRET: "CHANGETO32CHARSTRING"
 services:
   mediawiki:
-    image: thefirepanel/wiki:1.41
+    image: ghcr.io/thefirepanel/tfpwiki:main
     restart: always
     container_name: mediawiki
     ports:
