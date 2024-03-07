@@ -14,7 +14,7 @@ SM_INDEX="sitemap-index-tfp.xml"
 cd $MW_INSTALL_PATH
 
 # Generate new sitemap
-php $MW_SM_SCRIPT
+/usr/local/bin/php $MW_SM_SCRIPT
 
 # Create a link in our root directory to the sitemap, delete if already exists
 ln -sf $MW_INSTALL_PATH/sitemap/$SM_INDEX $MW_INSTALL_PATH/sitemap.xml
