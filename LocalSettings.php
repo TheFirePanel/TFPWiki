@@ -11,7 +11,7 @@
 # https://www.mediawiki.org/wiki/Manual:Configuration_settings
 
 # Protect against web entry
-if ( !defined( 'MEDIAWIKI' ) ) {
+if (!defined('MEDIAWIKI')) {
 	exit;
 }
 
@@ -94,55 +94,57 @@ $wgDefaultSkin = "vector-2022";
 
 # Enabled skins.
 # The following skins were automatically enabled:
-wfLoadSkin( 'MinervaNeue' );
-wfLoadSkin( 'MonoBook' );
-wfLoadSkin( 'Timeless' );
-wfLoadSkin( 'Vector' );
+wfLoadSkin('MinervaNeue');
+wfLoadSkin('MonoBook');
+wfLoadSkin('Timeless');
+wfLoadSkin('Vector');
 
 # Enabled extensions. Most of the extensions are enabled by adding
 # wfLoadExtension( 'ExtensionName' );
 # to LocalSettings.php. Check specific extension documentation for more details.
 # The following extensions were automatically enabled:
-wfLoadExtension( 'AbuseFilter' );
-wfLoadExtension( 'CategoryTree' );
-wfLoadExtension( 'Cite' );
-wfLoadExtension( 'CiteThisPage' );
-wfLoadExtension( 'CodeEditor' );
-wfLoadExtension( 'ConfirmEdit' );
-wfLoadExtension( 'Echo' );
-wfLoadExtension( 'Gadgets' );
-wfLoadExtension( 'ImageMap' );
-wfLoadExtension( 'InputBox' );
-wfLoadExtension( 'Interwiki' );
-wfLoadExtension( 'LoginNotify' );
-wfLoadExtension( 'Math' );
-wfLoadExtension( 'MultimediaViewer' );
-wfLoadExtension( 'Nuke' );
-wfLoadExtension( 'OATHAuth' );
-wfLoadExtension( 'ParserFunctions' );
-wfLoadExtension( 'PdfHandler' );
-wfLoadExtension( 'Scribunto' ); $wgScribuntoDefaultEngine = 'luasandbox';
-wfLoadExtension( 'SyntaxHighlight_GeSHi' );
-wfLoadExtension( 'SecureLinkFixer' );
-wfLoadExtension( 'SpamBlacklist' );
-wfLoadExtension( 'TemplateData' );
-wfLoadExtension( 'TextExtracts' );
-wfLoadExtension( 'Thanks' );
-wfLoadExtension( 'TitleBlacklist' );
-wfLoadExtension( 'VisualEditor' );
-wfLoadExtension( 'WikiEditor' );
+wfLoadExtension('AbuseFilter');
+wfLoadExtension('CategoryTree');
+wfLoadExtension('Cite');
+wfLoadExtension('CiteThisPage');
+wfLoadExtension('CodeEditor');
+wfLoadExtension('ConfirmEdit');
+wfLoadExtension('Echo');
+wfLoadExtension('Gadgets');
+wfLoadExtension('ImageMap');
+wfLoadExtension('InputBox');
+wfLoadExtension('Interwiki');
+wfLoadExtension('LoginNotify');
+wfLoadExtension('Math');
+wfLoadExtension('MultimediaViewer');
+wfLoadExtension('Nuke');
+wfLoadExtension('OATHAuth');
+wfLoadExtension('ParserFunctions');
+wfLoadExtension('PdfHandler');
+wfLoadExtension('Scribunto');
+$wgScribuntoDefaultEngine = 'luasandbox';
+wfLoadExtension('SyntaxHighlight_GeSHi');
+wfLoadExtension('SecureLinkFixer');
+wfLoadExtension('SpamBlacklist');
+wfLoadExtension('TemplateData');
+wfLoadExtension('TextExtracts');
+wfLoadExtension('Thanks');
+wfLoadExtension('TitleBlacklist');
+wfLoadExtension('VisualEditor');
+wfLoadExtension('WikiEditor');
 # End of automatically generated settings.
 # Add more configuration options below.
 
 ## Extra Extensions
-wfLoadExtension( 'Disambiguator' );
-wfLoadExtension( 'MobileFrontend' ); $wgMFDefaultSkinClass = 'MinervaNeue';
-wfLoadExtension( 'TemplateStyles' );
+wfLoadExtension('Disambiguator');
+wfLoadExtension('MobileFrontend');
+$wgMFDefaultSkinClass = 'MinervaNeue';
+wfLoadExtension('TemplateStyles');
 
 ## Image uploads
-$wgFileExtensions = array_merge( $wgFileExtensions, [
+$wgFileExtensions = array_merge($wgFileExtensions, [
 	'pdf', 'svg', 'mp3', 'ogg', 'wav'
-] );
+]);
 $wgSVGNativeRendering = true;
 
 ## SMTP
@@ -150,6 +152,7 @@ if (getenv('SMTP_HOST')) {
 	$wgSMTP = [
 		'host' => getenv('SMTP_HOST'),
 		'port' => getenv('SMTP_PORT'),
+		'IDHost' => getenv('SMTP_DOMAIN'),
 		'auth' => false
 	];
 	$wgEmergencyContact = getenv('SMTP_SENDER');
@@ -172,7 +175,7 @@ $wgGroupPermissions['sysop']['interwiki'] = true;
 
 ## S3
 if (getenv('S3_KEY')) {
-	wfLoadExtension( 'mediawiki-aws-s3' );
+	wfLoadExtension('mediawiki-aws-s3');
 	$wgAWSCredentials = [
 		'key' => getenv('S3_KEY'),
 		'secret' => getenv('S3_SECRET'),
@@ -186,8 +189,8 @@ if (getenv('S3_KEY')) {
 
 ## Pluggable Auth
 if (getenv('ID_SECRET')) {
-	wfLoadExtension( 'PluggableAuth' );
-	wfLoadExtension( 'OpenIDConnect' );
+	wfLoadExtension('PluggableAuth');
+	wfLoadExtension('OpenIDConnect');
 
 	$wgGroupPermissions['*']['createaccount'] = false;
 	$wgGroupPermissions['*']['autocreateaccount'] = true;
@@ -209,6 +212,6 @@ if (getenv('ID_SECRET')) {
 
 ## Discord
 if (getenv('DISCORD_WEBHOOK')) {
-	wfLoadExtension( 'mw-discord' );
-	$wgDiscordWebhookURL = [ getenv('DISCORD_WEBHOOK') ];
+	wfLoadExtension('mw-discord');
+	$wgDiscordWebhookURL = [getenv('DISCORD_WEBHOOK')];
 }
