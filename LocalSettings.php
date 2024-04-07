@@ -152,7 +152,6 @@ if (getenv('SMTP_HOST')) {
 	$wgSMTP = [
 		'host' => getenv('SMTP_HOST'),
 		'port' => getenv('SMTP_PORT'),
-		'IDHost' => getenv('SMTP_DOMAIN'),
 		'localhost' => getenv('SMTP_DOMAIN'),
 		'auth' => false
 	];
