@@ -153,7 +153,9 @@ if (getenv('SMTP_HOST')) {
 		'host' => getenv('SMTP_HOST'),
 		'port' => getenv('SMTP_PORT'),
 		'localhost' => getenv('SMTP_DOMAIN'),
-		'auth' => false
+		'auth' => true,
+		'username' => getenv('SMTP_USERNAME'),
+		'password' => getenv('SMTP_PASSWORD')
 	];
 	$wgEmergencyContact = getenv('SMTP_SENDER');
 	$wgPasswordSender = getenv('SMTP_SENDER');
