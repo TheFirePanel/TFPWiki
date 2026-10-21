@@ -4,25 +4,39 @@ cd $DIR # Make sure we are set in the correct wd
 
 # All extensions to add, [GIT URL]="BRANCH"
 declare -A repos=(
-    ["https://github.com/jayktaylor/mw-discord"]="REL1_39"
+    ["https://github.com/jayktaylor/mw-discord"]="REL1_35"
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
-    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/Disambiguator"]="REL1_41"
-    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/MobileFrontend"]="REL1_41"
-    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/OpenIDConnect"]="REL1_41"
-    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/PluggableAuth"]="REL1_41"
-    ["https://gerrit.wikimedia.org/r/mediawiki/extensions/TemplateStyles"]="REL1_41"
+    ["https://github.com/wikimedia/mediawiki-extensions-Disambiguator"]="REL1_46"
+    ["https://github.com/wikimedia/mediawiki-extensions-MobileFrontend"]="REL1_46"
+    ["https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect"]="REL1_46"
+    ["https://github.com/wikimedia/mediawiki-extensions-PluggableAuth"]="REL1_46"
 )
 
 # Go into extensions directory
 cd $DIR/extensions/
 for repo in "${!repos[@]}"; do
-    branch=${repos[$repo]}
-    
-    echo "Cloning $repo (branch: $branch)"
-    git clone --depth 1 --single-branch --branch $branch $repo
+    read -r branch name <<< "${repos[$repo]}"
 
-    IFS='/' read -ra VAL <<< "$repo"
-    chown -R www-data:www-data ${VAL[-1]}
+    if [ -z "$name" ]; then
+        IFS='/' read -ra VAL <<< "$repo"
+        name=${VAL[-1]}
+    fi
+
+    # Retry clones in case of transient network failures
+    for attempt in 1 2 3; do
+        echo "Cloning $repo into $name (branch: $branch, attempt $attempt)"
+        if git clone --depth 1 --single-branch --branch $branch $repo $name; then
+            break
+        fi
+        rm -rf $name
+        if [ $attempt -eq 3 ]; then
+            echo "Failed to clone $repo" >&2
+            exit 1
+        fi
+        sleep 10
+    done
+
+    chown -R www-data:www-data $name
 done
 
 ## Update/Install extension dependencies
