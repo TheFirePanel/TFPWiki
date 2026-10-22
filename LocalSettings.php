@@ -205,10 +205,15 @@ if (getenv('ID_SECRET')) {
 		'data' => [
 			'providerURL' => getenv('ID_PROVIDER'),
 			'clientID' => getenv('ID_CLIENT'),
-			'clientsecret' => getenv('ID_SECRET'),
-			'preferred_username' => 'sub'
+			'clientsecret' => getenv('ID_SECRET')
+			# preferred_username defaults to the 'preferred_username' claim (Discourse username).
+			# 'sub' is the numeric Discourse user ID, so it must not be used as the username.
 		]
 	];
+
+	# Users created before distrust switched 'sub' to the Discourse ID are linked by the old subject,
+	# so re-link them by username instead of creating duplicate "Name1" accounts
+	$wgOpenIDConnect_MigrateUsersByUserName = true;
 }
 
 ## Discord
