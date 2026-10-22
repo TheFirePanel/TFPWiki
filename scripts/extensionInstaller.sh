@@ -2,14 +2,15 @@
 DIR="/var/www/html"
 cd $DIR # Make sure we are set in the correct wd
 
-# All extensions to add, [GIT URL]="BRANCH"
+# All extensions to add, [GIT URL]="BRANCH [DIRECTORY NAME]"
+# Directory name defaults to the repo name, and must match what wfLoadExtension() expects
 declare -A repos=(
     ["https://github.com/jayktaylor/mw-discord"]="REL1_35"
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
-    ["https://github.com/wikimedia/mediawiki-extensions-Disambiguator"]="REL1_46"
-    ["https://github.com/wikimedia/mediawiki-extensions-MobileFrontend"]="REL1_46"
-    ["https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect"]="REL1_46"
-    ["https://github.com/wikimedia/mediawiki-extensions-PluggableAuth"]="REL1_46"
+    ["https://github.com/wikimedia/mediawiki-extensions-Disambiguator"]="REL1_46 Disambiguator"
+    ["https://github.com/wikimedia/mediawiki-extensions-MobileFrontend"]="REL1_46 MobileFrontend"
+    ["https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect"]="REL1_46 OpenIDConnect"
+    ["https://github.com/wikimedia/mediawiki-extensions-PluggableAuth"]="REL1_46 PluggableAuth"
 )
 
 # Go into extensions directory
