@@ -5,7 +5,7 @@ cd $DIR # Make sure we are set in the correct wd
 # All extensions to add, [GIT URL]="BRANCH [DIRECTORY NAME]"
 # Directory name defaults to the repo name, and must match what wfLoadExtension() expects
 declare -A repos=(
-    ["https://github.com/jayktaylor/mw-discord"]="REL1_35"
+    ["https://github.com/jayktaylor/mw-discord"]="REL1_45"
     ["https://github.com/edwardspec/mediawiki-aws-s3"]="master"
     ["https://github.com/wikimedia/mediawiki-extensions-Disambiguator"]="REL1_46 Disambiguator"
     ["https://github.com/wikimedia/mediawiki-extensions-MobileFrontend"]="REL1_46 MobileFrontend"
